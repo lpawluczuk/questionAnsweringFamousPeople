@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Author: Łukasz Pawluczuk
 
 import argparse
 import subprocess
@@ -33,13 +34,12 @@ class Sentence:
         print "Zdanie zostało rozpoznane."
 
     def tokenize(self, input):
-        proc = subprocess.Popen("cd psi-toolkit/build; echo " + input + " | psi-pipe tokenize; cd ../..;", shell=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        proc = subprocess.Popen("cd psi-toolkit/build; echo " + input + " | psi-pipe tokenize;", shell=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
         return [line.decode("UTF-8").strip() for line in proc.stdout]
 
     def lemmatize(self, input):
-        proc = subprocess.Popen("cd psi-toolkit/build; echo " + input + " | psi-pipe read-text ! tokenize ! lemmatize --lang pl ! write simple --tags lemma; cd ../..;", shell=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+        proc = subprocess.Popen("cd psi-toolkit/build; echo " + input + " | psi-pipe read-text ! tokenize ! lemmatize --lang pl ! write simple --tags lemma;", shell=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
         return [line.decode("UTF-8").strip() for line in proc.stdout]
-        # return [u'jaka|jaki', u'być', u'data', u'począć|poczęcie', u'Karol|Karola', u'Wojtyła']
 
     def ner(self):
         f = codecs.open('sentence.xml', "w", "utf-8")
@@ -47,7 +47,6 @@ class Sentence:
         f.close()
         proc = subprocess.Popen("liner2.3/liner2.sh pipe -ini ./liner2-models-fat-pack/config-muc-fast.ini -i ccl -f sentence.xml -o tuples", shell=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
         return [line.decode("UTF-8").split(",") for line in proc.stdout]
-        # return [[u'(20', u'32', u'PER', u'"Karola Wojtyły")\n']]
 
     def getXMLSentence(self):
         result = xmlTemplateStart
